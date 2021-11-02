@@ -23,7 +23,7 @@ def _set_segment_params(conf: dict) -> None:
 def set_params(conf_file: Union[str, None] = None) -> dict:
     global ROOT_DIR
 
-    ROOT_DIR = path.dirname(__file__) + "/../"       # project root directory
+    ROOT_DIR = path.dirname(__file__) + "/../"          # project root directory
 
     if conf_file is None:
         conf_file = ROOT_DIR + "config/default.yaml"    # load default file if not specified
