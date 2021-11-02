@@ -3,6 +3,7 @@ from typing import Union
 import numpy as np
 from particle_filter.script.parameter import set_params as set_pf_params
 
+
 def _set_fingerprint_params(conf: dict) -> None:
     global USE_BEACON_POINT, SCAN_SPAN, MARGIN_SPAN, SET_POINTS_POLICY, XLIM, YLIM
 

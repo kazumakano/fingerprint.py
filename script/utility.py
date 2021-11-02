@@ -1,6 +1,7 @@
-import particle_filter.script.parameter as pf_param
-import numpy as np
 import math
+import numpy as np
+import particle_filter.script.parameter as pf_param
+
 
 # calculate RSSI backward by distance-RSSI relation
 def calc_rssi_by_dist(dist: float) -> float:
