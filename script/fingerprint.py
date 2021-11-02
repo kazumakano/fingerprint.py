@@ -1,3 +1,4 @@
+import warnings
 from datetime import datetime, timedelta
 from typing import Any
 import cv2
@@ -63,8 +64,14 @@ class Fingerprint(Map):
             if not np.isneginf(self.rssi_lists[i, beacon_index]):    # if RSSI of specified beacon at the point is valid
                 valid_point_poses = np.vstack((valid_point_poses, p))
                 valid_rssi = np.hstack((valid_rssi, self.rssi_lists[i, beacon_index]))
+        try:
+            return griddata(valid_point_poses, valid_rssi, tuple(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1]))), method="cubic")
+        except:
+            print("fingerprint.py: heatmap of given beacon was not successfully created probably because of its fewness of valid points")
+            print(f"fingerprint.py: valid point positions are {valid_point_poses}")
+            warnings.simplefilter("ignore", category=UserWarning)
 
-        return griddata(valid_point_poses, valid_rssi, tuple(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1]))), method="cubic")
+            return np.full((self.img.shape[0], self.img.shape[1]), np.nan)
 
     def show_with_heatmap(self, log: Log, mac: str, enable_lim: bool = False, xlim: Any = None, ylim: Any = None) -> None:
         if mac not in log.mac_list:
