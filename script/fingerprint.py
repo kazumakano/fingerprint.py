@@ -81,7 +81,7 @@ class Fingerprint(Map):
             raise Warning("fingerprint.py: given MAC address was not found in log")
 
         ax = plt.subplots(figsize=(16, 16))[1]
-        cax: Axes = make_axes_locatable(ax).append_axes("right", 0.4, pad=0.1)    # create axis for colorbar
+        cax: Axes = make_axes_locatable(ax).append_axes("right", 0.2, pad=0.1)    # create axis for colorbar
         for i, m in enumerate(log.mac_list):
             if m == mac:
                 self.draw_any_pos(self.beacon_pos_list[i], (0, 0, 255))
