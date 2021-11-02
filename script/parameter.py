@@ -11,9 +11,8 @@ def _set_fingerprint_params(conf: dict) -> None:
     SCAN_SPAN = int(conf["scan_span"])                  # length of span to scan [s]
     MARGIN_SPAN = int(conf["margin_span"])              # length of span to prepare [s]
     SET_POINTS_POLICY = conf["set_points_policy"]       # 1: ground truth of trajectory, 2: scan point file
-    XLIM = conf["xlim"]                                 # width limitation for map image
-    YLIM = conf["ylim"]                                 # height limitation for map image
-    # ENABLE_DRAW_POINTS = conf["enable_draw_points"]     # draw points or not
+    XLIM = conf["xlim"]                                 # default width limitation for map image
+    YLIM = conf["ylim"]                                 # default height limitation for map image
 
 def _set_segment_params(conf: dict) -> None:
     global SEG_POLICY, MIN_COUNT

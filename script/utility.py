@@ -1,5 +1,4 @@
 import math
-import numpy as np
 import particle_filter.script.parameter as pf_param
 
 
