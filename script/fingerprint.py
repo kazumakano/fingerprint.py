@@ -84,17 +84,17 @@ class Fingerprint(Map):
         cax: Axes = make_axes_locatable(ax).append_axes("right", 0.2, pad=0.1)    # create axis for colorbar
         for i, m in enumerate(log.mac_list):
             if m == mac:
-                self.draw_any_pos(self.beacon_pos_list[i], (0, 0, 255))
+                img = cv2.circle(self.img.copy(), self.beacon_pos_list[i].astype(int), 3, (0, 0, 255), 6)
                 if enable_lim:
                     if xlim is None:
                         xlim = param.XLIM
                     if ylim is None:
                         ylim = param.YLIM
-                    ax.imshow(cv2.cvtColor(self.img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
+                    ax.imshow(cv2.cvtColor(img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
                     aximg: AxesImage = ax.imshow(self._create_heatmap(i)[ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
                     plt.colorbar(mappable=aximg, cax=cax)
                 else:
-                    ax.imshow(cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB))
+                    ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
                     aximg: AxesImage = ax.imshow(self._create_heatmap(i), cmap="jet", alpha=0.5)
                     plt.colorbar(mappable=aximg, cax=cax)
                 break
