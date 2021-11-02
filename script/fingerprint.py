@@ -4,6 +4,9 @@ from typing import Any
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.image import AxesImage
+from matplotlib.pyplot import Axes
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from particle_filter.script.log import Log
 from particle_filter.script.map import Map
 from scipy.interpolate import griddata
@@ -77,7 +80,8 @@ class Fingerprint(Map):
         if mac not in log.mac_list:
             raise Warning("fingerprint.py: given MAC address was not found in log")
 
-        plt.figure(figsize=(16, 16))
+        ax = plt.subplots(figsize=(16, 16))[1]
+        cax: Axes = make_axes_locatable(ax).append_axes("right", 0.4, pad=0.1)    # create axis for colorbar
         for i, m in enumerate(log.mac_list):
             if m == mac:
                 self.draw_any_pos(self.beacon_pos_list[i], (0, 0, 255))
@@ -86,9 +90,11 @@ class Fingerprint(Map):
                         xlim = param.XLIM
                     if ylim is None:
                         ylim = param.YLIM
-                    plt.imshow(cv2.cvtColor(self.img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
-                    plt.imshow(self._create_heatmap(i)[ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
+                    ax.imshow(cv2.cvtColor(self.img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
+                    aximg: AxesImage = ax.imshow(self._create_heatmap(i)[ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
+                    plt.colorbar(mappable=aximg, cax=cax)
                 else:
-                    plt.imshow(cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB))
-                    plt.imshow(self._create_heatmap(i), cmap="jet", alpha=0.5)
+                    ax.imshow(cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB))
+                    aximg: AxesImage = ax.imshow(self._create_heatmap(i), cmap="jet", alpha=0.5)
+                    plt.colorbar(mappable=aximg, cax=cax)
                 break
