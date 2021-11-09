@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any
 import cv2
 import numpy as np
+import particle_filter.script.parameter as pf_param
 from matplotlib import pyplot as plt
 from matplotlib.image import AxesImage
 from matplotlib.pyplot import Axes
@@ -13,6 +14,7 @@ from scipy.interpolate import griddata
 from . import parameter as param
 from . import utility as util
 from .segment import get_seg_rssi_list
+from .window import Window
 
 
 class Fingerprint(Map):
@@ -31,6 +33,7 @@ class Fingerprint(Map):
 
         self._set_points(point_num)
         self._set_rssi(log, point_num, begin, scan_span, entire_span)
+        self._create_fingerprint(log)
 
     def _set_points(self, point_num: int) -> None:
         if param.SET_POINTS_POLICY == 1:      # load from grand truth of trajectory
@@ -53,10 +56,6 @@ class Fingerprint(Map):
         
         print(f"fingerprint.py: RSSI has been loaded")
 
-    def draw_points(self) -> None:
-        for p in self.point_poses:
-            cv2.circle(self.img, p.astype(int), 3, (128, 128, 128), 6)
-
     def _create_heatmap(self, beacon_index: int) -> np.ndarray:
         valid_point_poses = np.empty((0, 2), dtype=np.float16)    # positions of points where RSSI is valid
         valid_rssi = np.empty(0, dtype=np.float16)
@@ -71,10 +70,19 @@ class Fingerprint(Map):
             return griddata(valid_point_poses, valid_rssi, tuple(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1]))), method="cubic")
         except:
             print("fingerprint.py: heatmap of given MAC address was not successfully created probably because of its fewness of valid points")
-            print(f"fingerprint.py: valid point positions are {valid_point_poses}")
+            print(f"fingerprint.py: valid points are {valid_point_poses}")
             warnings.simplefilter("ignore", category=UserWarning)
 
             return np.full((self.img.shape[0], self.img.shape[1]), np.nan)
+
+    def _create_fingerprint(self, log: Log) -> None:
+        self.grid_list = np.empty((len(log.mac_list), self.img.shape[0], self.img.shape[1]), dtype=np.float64)
+        for i in range(len(log.mac_list)):
+            self.grid_list[i] = self._create_heatmap(i)
+
+    def draw_points(self) -> None:
+        for p in self.point_poses:
+            super().draw_any_pos(p, (128, 128, 128))
 
     def show_with_heatmap(self, log: Log, mac: str, enable_lim: bool = False, xlim: Any = None, ylim: Any = None) -> None:
         if mac not in log.mac_list:
@@ -91,10 +99,31 @@ class Fingerprint(Map):
                     if ylim is None:
                         ylim = param.YLIM
                     ax.imshow(cv2.cvtColor(img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
-                    aximg: AxesImage = ax.imshow(self._create_heatmap(i)[ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
+                    aximg: AxesImage = ax.imshow(self.grid_list[i, ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
                     plt.colorbar(mappable=aximg, cax=cax)
                 else:
                     ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-                    aximg: AxesImage = ax.imshow(self._create_heatmap(i), cmap="jet", alpha=0.5)
+                    aximg: AxesImage = ax.imshow(self.grid_list[i], cmap="jet", alpha=0.5)
                     plt.colorbar(mappable=aximg, cax=cax)
                 break
+
+    def estim_pos(self, win: Window) -> np.ndarray:
+        lh = np.zeros((self.img.shape[0], self.img.shape[1]), dtype=np.float64)
+        for i, r in enumerate(win.rssi_list):
+            if not np.isneginf(r):
+                lh += np.where(np.isnan(self.grid_list[i]), 0, np.abs(self.grid_list[i] - r))
+
+        max_lh = lh.max()
+        if max_lh == 0:    # if 
+            return np.full(2, np.nan, np.float16)
+        else:
+            return np.argwhere(lh == lh.max()).mean(axis=0)[::-1]
+
+    def draw_any_pos(self, pos: np.ndarray) -> None:
+        if pf_param.ENABLE_CLEAR:
+            self.clear()
+        try:
+            super().draw_any_pos(pos, (0, 0, 255))
+        except:
+            print("fingerprint.py: error occurred when drawimg position")
+            print(f"fingerprint.py: position is {pos}")
