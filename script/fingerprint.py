@@ -73,7 +73,7 @@ class Fingerprint(Map):
             print(f"fingerprint.py: valid points are {valid_point_poses}")
             warnings.simplefilter("ignore", category=UserWarning)
 
-            return np.full((self.img.shape[0], self.img.shape[1]), np.nan)
+            return np.full(self.img.shape[:2], np.nan)
 
     def _create_fingerprint(self, log: Log) -> None:
         self.grid_list = np.empty((len(log.mac_list), self.img.shape[0], self.img.shape[1]), dtype=np.float64)
@@ -108,16 +108,15 @@ class Fingerprint(Map):
                 break
 
     def estim_pos(self, win: Window) -> np.ndarray:
-        lh = np.zeros((self.img.shape[0], self.img.shape[1]), dtype=np.float64)
+        lh_grid = np.zeros(self.img.shape[:2], dtype=np.float64)
         for i, r in enumerate(win.rssi_list):
-            if not np.isneginf(r):
-                lh += np.where(np.isnan(self.grid_list[i]), 0, np.abs(self.grid_list[i] - r))
+            lh_grid += util.get_likelihood_grid(self.grid_list[i], r)
 
-        max_lh = lh.max()
-        if max_lh == 0:    # if 
+        max_lh = lh_grid.max()
+        if max_lh == 0:    # if likelihood is 0 everywhere
             return np.full(2, np.nan, np.float16)
         else:
-            return np.argwhere(lh == lh.max()).mean(axis=0)[::-1]
+            return np.argwhere(lh_grid == max_lh).mean(axis=0)[::-1]
 
     def draw_any_pos(self, pos: np.ndarray) -> None:
         if pf_param.ENABLE_CLEAR:
