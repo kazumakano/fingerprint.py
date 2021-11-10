@@ -17,7 +17,7 @@ def _set_main_params(conf: dict) -> None:
     FP_LOG_BEGIN = datetime.strptime(conf["fp_log_begin"], "%Y-%m-%d %H:%M:%S")
     FP_LOG_END = datetime.strptime(conf["fp_log_end"], "%Y-%m-%d %H:%M:%S")
 
-def estim_pos_with_fingerprint() -> None:
+def fingerprint() -> None:
     log = Log(BEGIN, END)
     fp_log = Log(FP_LOG_BEGIN, FP_LOG_END)
     fp = Fingerprint(fp_log, FP_LOG_BEGIN, FP_LOG_END)
@@ -55,4 +55,4 @@ if __name__ == "__main__":
 
     conf = set_params(parser.parse_args().config)
     _set_main_params(conf)
-    estim_pos_with_fingerprint()
+    fingerprint()
