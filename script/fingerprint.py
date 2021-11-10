@@ -107,9 +107,9 @@ class Fingerprint(Map):
                     plt.colorbar(mappable=aximg, cax=cax)
                 break
 
-    def estim_pos(self, win: Window) -> np.ndarray:
+    def estim_pos(self, rssi_list: np.ndarray) -> np.ndarray:
         lh_grid = np.zeros(self.img.shape[:2], dtype=np.float64)
-        for i, r in enumerate(win.rssi_list):
+        for i, r in enumerate(rssi_list):
             lh_grid += util.get_likelihood_grid(self.grid_list[i], r)
 
         max_lh = lh_grid.max()

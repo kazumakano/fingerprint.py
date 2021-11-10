@@ -30,9 +30,9 @@ def fingerprint() -> None:
     t = BEGIN
     while t <= END:
         print(f"main.py: {t.time()}")
-        win = Window(log, fp_log, t)
+        win = Window(log, fp_log.mac_list, t)
 
-        estim_pos = fp.estim_pos(win)
+        estim_pos = fp.estim_pos(win.rssi_list)
         
         if not np.isnan(estim_pos[0]):    # if not lost
             fp.draw_any_pos(estim_pos)
