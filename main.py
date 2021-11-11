@@ -19,7 +19,7 @@ def _set_main_params(conf: dict) -> None:
 
 def fingerprint() -> None:
     log = Log(BEGIN, END)
-    fp_log = Log(FP_LOG_BEGIN, FP_LOG_END)
+    fp_log = Log(FP_LOG_BEGIN + timedelta(seconds=pf_param.WIN_SIZE), FP_LOG_END)
     fp = Fingerprint(fp_log, FP_LOG_BEGIN, FP_LOG_END)
 
     if pf_param.ENABLE_DRAW_BEACONS:
