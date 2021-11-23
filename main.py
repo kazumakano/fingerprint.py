@@ -35,7 +35,7 @@ def fingerprint() -> None:
         estim_pos = fp.estim_pos(win.rssi_list)
         
         if not np.isnan(estim_pos[0]):    # if not lost
-            fp.draw_any_pos(estim_pos)
+            fp.safe_draw_pos(estim_pos)
             fp.show()
         if pf_param.ENABLE_SAVE_VIDEO:
             fp.record()

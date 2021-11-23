@@ -82,7 +82,7 @@ class Fingerprint(Map):
 
     def draw_points(self) -> None:
         for p in self.point_poses:
-            super().draw_any_pos(p, (128, 128, 128))
+            self.draw_any_pos(p, (128, 128, 128))
 
     def show_with_heatmap(self, log: Log, mac: str, enable_lim: bool = False, xlim: Any = None, ylim: Any = None) -> None:
         if mac not in log.mac_list:
@@ -118,7 +118,7 @@ class Fingerprint(Map):
         else:
             return np.argwhere(lh_grid == max_lh).mean(axis=0)[::-1]
 
-    def draw_any_pos(self, pos: np.ndarray) -> None:
+    def safe_draw_pos(self, pos: np.ndarray) -> None:
         if pf_param.ENABLE_CLEAR:
             self.clear()
         try:
