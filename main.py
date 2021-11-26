@@ -26,7 +26,7 @@ def fingerprint() -> None:
         fp.draw_beacons(True)
     if pf_param.ENABLE_SAVE_VIDEO:
         fp.init_recorder()
-    
+
     t = BEGIN
     while t <= END:
         print(f"main.py: {t.time()}")
