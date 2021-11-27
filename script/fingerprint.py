@@ -1,3 +1,4 @@
+import os.path as path
 import warnings
 from datetime import datetime, timedelta
 from typing import Any
@@ -14,7 +15,6 @@ from scipy.interpolate import griddata
 from . import parameter as param
 from . import utility as util
 from .segment import get_seg_rssi_list
-from .window import Window
 
 
 class Fingerprint(Map):
@@ -39,7 +39,7 @@ class Fingerprint(Map):
         if param.SET_POINTS_POLICY == 1:      # load from grand truth of trajectory
             pass
         elif param.SET_POINTS_POLICY == 2:    # load from scan point file
-            self.point_poses: np.ndarray = np.loadtxt(param.ROOT_DIR + "map/point.csv", dtype=np.float16, delimiter=",")
+            self.point_poses: np.ndarray = np.loadtxt(path.join(param.ROOT_DIR, "map/point.csv"), dtype=np.float16, delimiter=",")
 
         if len(self.point_poses) != point_num:
             raise Exception(f"fingerprint.py: the number of scan points is expected to be {point_num} but {len(self.point_poses)} points were loaded")
@@ -118,11 +118,7 @@ class Fingerprint(Map):
         else:
             return np.argwhere(lh_grid == max_lh).mean(axis=0)[::-1]
 
-    def safe_draw_pos(self, pos: np.ndarray) -> None:
+    def draw_pos(self, pos: np.ndarray) -> None:
         if pf_param.ENABLE_CLEAR:
             self.clear()
-        try:
-            super().draw_any_pos(pos, (0, 0, 255))
-        except:
-            print("fingerprint.py: error occurred when drawimg position")
-            print(f"fingerprint.py: position is {pos}")
+        self.draw_any_pos(pos, (0, 0, 255))

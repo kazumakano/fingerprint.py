@@ -35,7 +35,7 @@ def fingerprint() -> None:
         estim_pos = fp.estim_pos(win.rssi_list)
         
         if not np.isnan(estim_pos[0]):    # if not lost
-            fp.safe_draw_pos(estim_pos)
+            fp.draw_pos(estim_pos)
             fp.show()
         if pf_param.ENABLE_SAVE_VIDEO:
             fp.record()
@@ -43,10 +43,10 @@ def fingerprint() -> None:
         t += timedelta(seconds=pf_param.WIN_STRIDE)
     
     print("main.py: reached end of log")
-    if pf_param.ENABLE_SAVE_VIDEO:
-        fp.save_video()
     if pf_param.ENABLE_SAVE_IMG:
         fp.save_img()
+    if pf_param.ENABLE_SAVE_VIDEO:
+        fp.save_video()
     fp.show(0)
 
 if __name__ == "__main__":
@@ -55,4 +55,5 @@ if __name__ == "__main__":
 
     conf = set_params(parser.parse_args().config)
     _set_main_params(conf)
+
     fingerprint()
