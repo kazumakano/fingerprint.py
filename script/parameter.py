@@ -26,7 +26,7 @@ def set_params(conf_file: Union[str, None] = None) -> dict:
     ROOT_DIR = path.join(path.dirname(__file__), "../")       # project root directory
 
     if conf_file is None:
-        conf_file = path.join(ROOT_DIR, "config/default.yaml")    # load default file if not specified
+        conf_file = path.join(ROOT_DIR, "config/default.yaml")    # load default file
 
     conf = set_pf_params(conf_file)
     _set_fingerprint_params(conf)
