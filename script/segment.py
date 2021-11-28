@@ -22,10 +22,10 @@ def get_seg_rssi_list(log: Log, current: datetime, scan_span: timedelta) -> np.n
     if param.SEG_POLICY == 1:      # use median of RSSI
         for i, l in enumerate(all_rssi):
             if len(l) > param.MIN_COUNT:    # ignore unreliable data
-                rssi_list[i] = np.median(l)
+                rssi_list[i] = np.float16(np.median(l))
     elif param.SEG_POLICY == 2:    # use mode of RSSI
         for i, l in enumerate(all_rssi):
             if len(l) > param.MIN_COUNT:
-                rssi_list[i] = np.median(multimode(l))
+                rssi_list[i] = np.float16(np.median(multimode(l)))
 
     return rssi_list

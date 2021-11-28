@@ -22,7 +22,7 @@ class Fingerprint(Map):
         global RSSI_AT_BEACON
 
         if param.USE_BEACON_POINT:
-            RSSI_AT_BEACON = util.calc_rssi_by_dist(0)    # RSSI at point directly under beacon
+            RSSI_AT_BEACON = np.float16(util.calc_rssi_by_dist(0))    # RSSI at point directly under beacon
 
         super().__init__(log)
 
@@ -61,19 +61,19 @@ class Fingerprint(Map):
         valid_rssi = np.empty(0, dtype=np.float16)
         if param.USE_BEACON_POINT:
             valid_point_poses = np.vstack((valid_point_poses, self.beacon_pos_list[beacon_index]))
-            valid_rssi = np.hstack((valid_rssi, np.float16(RSSI_AT_BEACON)))
+            valid_rssi = np.hstack((valid_rssi, RSSI_AT_BEACON))
         for i, p in enumerate(self.point_poses):
             if not np.isneginf(self.rssi_lists[i, beacon_index]):    # if RSSI of specified beacon at the point is valid
                 valid_point_poses = np.vstack((valid_point_poses, p))
                 valid_rssi = np.hstack((valid_rssi, self.rssi_lists[i, beacon_index]))
         try:
-            return griddata(valid_point_poses, valid_rssi, tuple(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1]))), method="cubic")
+            return griddata(valid_point_poses, valid_rssi, tuple(np.array(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1])), dtype=np.uint16)), method="cubic")
         except:
             print("fingerprint.py: heatmap of given MAC address was not successfully created probably because of its fewness of valid points")
             print(f"fingerprint.py: valid points are {valid_point_poses}")
             warnings.simplefilter("ignore", category=UserWarning)
 
-            return np.full(self.img.shape[:2], np.nan)
+            return np.full(self.img.shape[:2], np.nan, dtype=np.float64)
 
     def _create_fingerprint(self, log: Log) -> None:
         self.grid_list = np.empty((len(log.mac_list), self.img.shape[0], self.img.shape[1]), dtype=np.float64)
@@ -82,7 +82,23 @@ class Fingerprint(Map):
 
     def draw_points(self) -> None:
         for p in self.point_poses:
-            self.draw_any_pos(p, (128, 128, 128))
+            self._draw_any_pos(p, (128, 128, 128))
+
+    def estim_pos(self, rssi_list: np.ndarray) -> np.ndarray:
+        lh_grid = np.zeros(self.img.shape[:2], dtype=np.float64)
+        for i, r in enumerate(rssi_list):
+            lh_grid += util.get_likelihood_grid(self.grid_list[i], r)
+
+        max_lh: np.float64 = lh_grid.max()
+        if max_lh == 0:    # if likelihood is 0 everywhere
+            return np.full(2, np.nan, dtype=np.float16)
+        else:
+            return np.argwhere(lh_grid == max_lh).mean(axis=0).astype(np.float16)[::-1]
+
+    def draw_pos(self, pos: np.ndarray) -> None:
+        if pf_param.ENABLE_CLEAR:
+            self.clear()
+        self._draw_any_pos(pos, (0, 0, 255))
 
     def show_with_heatmap(self, log: Log, mac: str, enable_lim: bool = False, xlim: Any = None, ylim: Any = None) -> None:
         if mac not in log.mac_list:
@@ -106,19 +122,3 @@ class Fingerprint(Map):
                     aximg: AxesImage = ax.imshow(self.grid_list[i], cmap="jet", alpha=0.5)
                     plt.colorbar(mappable=aximg, cax=cax)
                 break
-
-    def estim_pos(self, rssi_list: np.ndarray) -> np.ndarray:
-        lh_grid = np.zeros(self.img.shape[:2], dtype=np.float64)
-        for i, r in enumerate(rssi_list):
-            lh_grid += util.get_likelihood_grid(self.grid_list[i], r)
-
-        max_lh = lh_grid.max()
-        if max_lh == 0:    # if likelihood is 0 everywhere
-            return np.full(2, np.nan, np.float16)
-        else:
-            return np.argwhere(lh_grid == max_lh).mean(axis=0)[::-1]
-
-    def draw_pos(self, pos: np.ndarray) -> None:
-        if pf_param.ENABLE_CLEAR:
-            self.clear()
-        self.draw_any_pos(pos, (0, 0, 255))
