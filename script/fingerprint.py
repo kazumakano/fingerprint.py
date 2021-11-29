@@ -32,7 +32,7 @@ class Fingerprint(Map):
         print(f"fingerprint.py: the number of scan points is {point_num}")
 
         self._set_points(point_num)
-        self._set_rssi(log, point_num, begin, scan_span, entire_span)
+        self._set_rssis(log, point_num, begin, scan_span, entire_span)
         self._create_fingerprint(log)
 
     def _set_points(self, point_num: int) -> None:
@@ -46,7 +46,7 @@ class Fingerprint(Map):
 
         print("fingerprint.py: scan points has been loaded")
 
-    def _set_rssi(self, log: Log, point_num: int, begin: datetime, scan_span: timedelta, entire_span: timedelta) -> None:
+    def _set_rssis(self, log: Log, point_num: int, begin: datetime, scan_span: timedelta, entire_span: timedelta) -> None:
         self.rssi_lists = np.empty((point_num, len(log.mac_list)), dtype=np.float16)
 
         t = begin
