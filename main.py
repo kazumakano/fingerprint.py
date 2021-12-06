@@ -4,7 +4,6 @@ import numpy as np
 import particle_filter.script.parameter as pf_param
 from particle_filter.script.log import Log
 from script.fingerprint import Fingerprint
-from script.parameter import set_params
 from script.window import Window
 
 
@@ -50,6 +49,7 @@ def fingerprint() -> None:
 
 if __name__ == "__main__":
     import argparse
+    from script.parameter import set_params
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", help="specify your config file", metavar="PATH_TO_CONFIG_FILE")
