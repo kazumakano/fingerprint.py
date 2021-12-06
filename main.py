@@ -1,4 +1,3 @@
-import argparse
 import datetime
 from datetime import datetime, timedelta
 import numpy as np
@@ -50,6 +49,8 @@ def fingerprint() -> None:
     fp.show(0)
 
 if __name__ == "__main__":
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", help="specify your config file", metavar="PATH_TO_CONFIG_FILE")
 
