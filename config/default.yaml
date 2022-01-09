@@ -1,41 +1,44 @@
-# fingerprint
-fp_log_begin: "2000-01-01 00:00:00"
-fp_log_end: "2000-01-01 01:00:00"
-use_beacon_point: False
-scan_span: 60
+begin: "2000-01-01 00:00:00"
+end: "2000-01-01 23:59:59"
+log_file: "sample_ble.csv"
+
+win_size: 2
+
+enable_clear_map: True
+enable_draw_beacons: False
+enable_save_img: False
+enable_save_video: False
+frame_rate: 1
+map_conf_file: sample.yaml
+map_img_file: sample.pgm
+result_file_name:
+win_stride: 1
+
+enable_truth: False
+
+el_correction: 2
+propag_coef: 4
+
+win_policy: 1
+
+fp_begin: "2000-01-01 00:00:00"
+fp_end: "2000-01-01 01:00:00"
+fp_log_file: "sample_ble.csv"
+
 margin_span: 30
-set_points_policy: 1
+scan_span: 60
+set_points_policy: 2
+use_beacon_points: False
 xlim: [0, 1000]
 ylim: [0, 1000]
 
-# segment
-seg_policy: 1
 min_reception_count: 50
+seg_policy: 1
 
-# particle filter
-begin: "2000-01-01 00:00:00"
-end: "2000-01-01 23:59:59"
-enable_truth: False
-
-map_img_file: sample.pgm
-map_conf_file: sample.yaml
-enable_clear_map: True
-enable_draw_beacons: False
+# tentative
 map_show_policy: 1
-
-max_particle_stride: 32
 direct_sd: 4.5
-lost_resample_policy: 2
-
-win_size: 2
-win_stride: 1
-win_policy: 1
-
-enable_save_video: False
-enable_save_img: False
-file_name:
-frame_rate: 1
-
-propag_coef: 4
-el_correction: 2
+max_particle_stride: 32
+lost_resample_policy: 1
 dist_sd: 64
+neg_weight_coef: 0
