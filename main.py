@@ -15,7 +15,7 @@ def _set_main_params(conf: dict) -> None:
     LOG_FILE = str(conf["log_file"])
     FP_BEGIN = datetime.strptime(conf["fp_begin"], "%Y-%m-%d %H:%M:%S")
     FP_END = datetime.strptime(conf["fp_end"], "%Y-%m-%d %H:%M:%S")
-    FP_LOG_FILE = str(conf["log_file"])
+    FP_LOG_FILE = str(conf["fp_log_file"])
 
 def fingerprint() -> None:
     log = Log(BEGIN, END, path.join(pf_param.ROOT_DIR, "log/observed/", LOG_FILE))
