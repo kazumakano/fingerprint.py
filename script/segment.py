@@ -5,7 +5,7 @@ from particle_filter.script.log import Log
 from . import parameter as param
 
 
-def get_seg_rssi_list(log: Log, current: datetime, scan_span: timedelta) -> np.ndarray:
+def get_seg_rssi_list(current: datetime, log: Log, scan_span: timedelta) -> np.ndarray:
     rssi_list = np.full(len(log.mac_list), -np.inf, dtype=np.float16)    # list of typical RSSI in this segment
     all_rssi = np.empty(len(log.mac_list), dtype=np.ndarray)
     for i in range(len(log.mac_list)):

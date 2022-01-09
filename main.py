@@ -1,4 +1,4 @@
-import datetime
+import os.path as path
 from datetime import datetime, timedelta
 import numpy as np
 import particle_filter.script.parameter as pf_param
@@ -8,17 +8,19 @@ from script.window import Window
 
 
 def _set_main_params(conf: dict) -> None:
-    global BEGIN, END, FP_LOG_BEGIN, FP_LOG_END
+    global BEGIN, END, LOG_FILE, FP_BEGIN, FP_END, FP_LOG_FILE
 
     BEGIN = datetime.strptime(conf["begin"], "%Y-%m-%d %H:%M:%S")
     END = datetime.strptime(conf["end"], "%Y-%m-%d %H:%M:%S")
-    FP_LOG_BEGIN = datetime.strptime(conf["fp_log_begin"], "%Y-%m-%d %H:%M:%S")
-    FP_LOG_END = datetime.strptime(conf["fp_log_end"], "%Y-%m-%d %H:%M:%S")
+    LOG_FILE = str(conf["log_file"])
+    FP_BEGIN = datetime.strptime(conf["fp_begin"], "%Y-%m-%d %H:%M:%S")
+    FP_END = datetime.strptime(conf["fp_end"], "%Y-%m-%d %H:%M:%S")
+    FP_LOG_FILE = str(conf["log_file"])
 
 def fingerprint() -> None:
-    log = Log(BEGIN, END)
-    fp_log = Log(FP_LOG_BEGIN + timedelta(seconds=pf_param.WIN_SIZE), FP_LOG_END)
-    fp = Fingerprint(fp_log, FP_LOG_BEGIN, FP_LOG_END)
+    log = Log(BEGIN, END, path.join(pf_param.ROOT_DIR, "log/observed/", LOG_FILE))
+    fp_log = Log(FP_BEGIN + timedelta(seconds=pf_param.WIN_SIZE), FP_END, path.join(pf_param.ROOT_DIR, "log/observed/", FP_LOG_FILE))
+    fp = Fingerprint(FP_BEGIN, FP_END, fp_log)
 
     if pf_param.ENABLE_DRAW_BEACONS:
         fp.draw_beacons(True)
@@ -28,7 +30,7 @@ def fingerprint() -> None:
     t = BEGIN
     while t <= END:
         print(f"main.py: {t.time()}")
-        win = Window(log, fp_log.mac_list, t)
+        win = Window(t, fp_log.mac_list, log)
 
         estim_pos = fp.estim_pos(win.rssi_list)
         
@@ -52,9 +54,8 @@ if __name__ == "__main__":
     from script.parameter import set_params
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", help="specify your config file", metavar="PATH_TO_CONFIG_FILE")
+    parser.add_argument("-c", "--conf_file", help="specify config file", metavar="PATH_TO_CONF_FILE")
 
-    conf = set_params(parser.parse_args().config)
-    _set_main_params(conf)
+    _set_main_params(set_params(parser.parse_args().conf_file))
 
     fingerprint()

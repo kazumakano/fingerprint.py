@@ -1,11 +1,11 @@
 # fingerprint.py
-This is Python module to generate RSSI heatmap and estimate subject position with it.
+This is Python module to generate RSSI heatmaps and estimate subject position with them.
 
 ## Usage
 ### main.py
 You can run with following command.
-You can specify config file with `--config` flag.
-`config/default.yaml` will be used if no config file is specified.
+You can specify config file with `--conf_file` flag.
+`config/default.yaml` will be used if unspecified.
 ```sh
-python main.py [--config PATH_TO_CONFIG_FILE]
+python main.py [--conf_file PATH_TO_CONF_FILE]
 ```
