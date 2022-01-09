@@ -18,20 +18,12 @@ You can customize following parameters:
 | frame_rate           | frame rate of video [FPS]                           | synchronized with real speed if 0                                    | `float`       |
 | map_conf_file        | map config file                                     |                                                                      | `str`         |
 | map_img_file         | map image file                                      |                                                                      | `str`         |
-| map_show_policy      | policy to show particles and trajectory             | 1: all, 2: all & likeliest, 3: all & center, 4: likeliest, 5: center | `int`         |
 | result_file_name     | file name of image and video                        | auto generated if unspecified                                        | `str \| None` |
 | win_stride           | stride width of sliding window [second]             |                                                                      | `float`       |
 |                      |                                                     |                                                                      |               |
-| direct_sd            | standard deviation of direction at walk             |                                                                      | `float`       |
-| max_particle_stride  | maximum stride width of particles in a step [pixel] |                                                                      | `float`       |
-|                      |                                                     |                                                                      |               |
-| lost_resample_policy | policy to resample particles when lost              | 1: reset, 2: use last particles                                      | `int`         |
-|                      |                                                     |                                                                      |               |
 | enable_truth         | enable ground truth or not                          |                                                                      | `bool`        |
 |                      |                                                     |                                                                      |               |
-| dist_sd              | standard deviation of distance gap                  |                                                                      | `float`       |
 | el_correction        | correction term for difference in elevation         |                                                                      | `float`       |
-| neg_weight_coef      | coefficient for negative weight                     | not consider undetected beacons if 0                                 | `float`       |
 | propag_coef          | propagation coefficient                             | takes 2 in ideal environment                                         | `float`       |
 |                      |                                                     |                                                                      |               |
 | win_policy           | policy to get representative RSSI value in window   | 1: maximum, 2: latest                                                | `int`         |
