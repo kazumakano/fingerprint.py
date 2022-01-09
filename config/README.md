@@ -32,8 +32,8 @@ You can customize following parameters:
 | fp_end               | end datetime of RSSI log for fingerprinting         | must be like 'yyyy-mm-dd hh:mm:ss'                                   | `str`         |
 | fp_log_file          | RSSI log file for fingerprinting                    |                                                                      | `str`         |
 |                      |                                                     |                                                                      |               |
-| margin_span          | length of span to prepare for next scan [s]         |                                                                      | `float`       |
-| scan_span            | length of span to scan [s]                          |                                                                      | `float`       |
+| margin_span          | length of span to prepare for next scan [second]    |                                                                      | `float`       |
+| scan_span            | length of span to scan [second]                     |                                                                      | `float`       |
 | set_points_policy    | policy to set points                                | 1: ground truth trajectory, 2: scan point file                       | `int`         |
 | use_beacon_points    | use beacon positions as scan points or not          |                                                                      | `bool`        |
 | xlim                 | default width limitation for heatmap visualization  |                                                                      | `list[int]`   |
