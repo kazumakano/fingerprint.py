@@ -19,6 +19,9 @@ from .segment import get_seg_rssi_list
 
 class Fingerprint(Map):
     def __init__(self, begin: datetime, end: datetime, log: Log) -> None:
+        if begin > end:
+            raise Exception("log.py: log range is wrong")
+
         global RSSI_AT_BEACON
 
         if param.USE_BEACON_POINTS:
