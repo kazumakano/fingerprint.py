@@ -1,5 +1,5 @@
 # fingerprint.py
-This is Python module to generate RSSI heatmaps and estimate subject position with them.
+This is Python module to generate RSSI heatmaps and estimate subject's position with them.
 
 ## Usage
 ### main.py
