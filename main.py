@@ -1,5 +1,6 @@
 import os.path as path
 from datetime import datetime, timedelta
+from typing import Any
 import numpy as np
 import particle_filter.script.parameter as pf_param
 from particle_filter.script.log import Log
@@ -7,7 +8,7 @@ from script.fingerprint import Fingerprint
 from script.window import Window
 
 
-def _set_main_params(conf: dict) -> None:
+def _set_main_params(conf: dict[str, Any]) -> None:
     global BEGIN, END, LOG_FILE, FP_BEGIN, FP_END, FP_LOG_FILE
 
     BEGIN = datetime.strptime(conf["begin"], "%Y-%m-%d %H:%M:%S")
