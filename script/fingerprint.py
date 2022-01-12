@@ -6,8 +6,6 @@ import cv2
 import numpy as np
 import particle_filter.script.parameter as pf_param
 from matplotlib import pyplot as plt
-from matplotlib.image import AxesImage
-from matplotlib.pyplot import Axes
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from particle_filter.script.log import Log
 from particle_filter.script.map import Map
@@ -108,7 +106,8 @@ class Fingerprint(Map):
             raise Warning("fingerprint.py: given MAC address was not found in log")
 
         ax = plt.subplots(figsize=(16, 16))[1]
-        cax: Axes = make_axes_locatable(ax).append_axes("right", 0.2, pad=0.1)    # create axis for colorbar
+        cax: plt.Axes = make_axes_locatable(ax).append_axes("right", 0.2, pad=0.1)    # create axis for colorbar
+        print("cax", type(cax))
         for i, m in enumerate(mac_list):
             if m == mac:
                 img = cv2.circle(self.img.copy(), self.beacon_pos_list[i].astype(int), 3, (0, 0, 255), 6)
@@ -118,10 +117,11 @@ class Fingerprint(Map):
                     if ylim is None:
                         ylim = param.YLIM
                     ax.imshow(cv2.cvtColor(img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
-                    aximg: AxesImage = ax.imshow(self.grid_list[i, ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
+                    aximg: plt.AxesImage = ax.imshow(self.grid_list[i, ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
+                    print("aximg", type(aximg))
                     plt.colorbar(mappable=aximg, cax=cax)
                 else:
                     ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-                    aximg: AxesImage = ax.imshow(self.grid_list[i], cmap="jet", alpha=0.5)
+                    aximg: plt.AxesImage = ax.imshow(self.grid_list[i], cmap="jet", alpha=0.5)
                     plt.colorbar(mappable=aximg, cax=cax)
                 break
