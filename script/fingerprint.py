@@ -17,10 +17,10 @@ from .segment import get_seg_rssi_list
 
 class Fingerprint(Map):
     def __init__(self, begin: datetime, end: datetime, log: Log) -> None:
+        global RSSI_AT_BEACON
+
         if begin > end:
             raise Exception("log.py: log range is wrong")
-
-        global RSSI_AT_BEACON
 
         if param.USE_BEACON_POINTS:
             RSSI_AT_BEACON = np.float16(util.calc_rssi_by_dist(0))    # RSSI at points directly under beacon
@@ -93,12 +93,9 @@ class Fingerprint(Map):
         lh_grid = np.zeros(self.img.shape[:2], dtype=np.float64)
         for i, r in enumerate(rssi_list):
             lh_grid += util.get_likelihood_grid(self.grid_list[i], r)
-
         max_lh: np.float64 = lh_grid.max()
-        if max_lh == 0:    # if likelihood is 0 everywhere
-            return np.full(2, np.nan, dtype=np.float16)
-        else:
-            return np.argwhere(lh_grid == max_lh).mean(axis=0).astype(np.float16)[::-1]
+
+        return np.full(2, np.nan, dtype=np.float16) if max_lh == 0 else np.argwhere(lh_grid == max_lh).mean(axis=0).astype(np.float16)[::-1]
 
     def show_with_heatmap(self, mac: str, mac_list: np.ndarray, enable_lim: bool = False, xlim: Any = None, ylim: Any = None) -> None:
         if mac not in mac_list:
