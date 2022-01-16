@@ -14,7 +14,7 @@ map_img_file: sample.pgm
 result_file_name:
 win_stride: 1
 
-enable_truth: False
+truth_log_file:
 
 el_correction: 2
 propag_coef: 4

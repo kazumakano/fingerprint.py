@@ -1,5 +1,4 @@
 # config
-
 This is directory for config files.
 Put your config files here.
 You can customize following parameters:
@@ -21,7 +20,7 @@ You can customize following parameters:
 | result_file_name     | file name of image and video                        | auto generated if unspecified                                        | `str \| None` |
 | win_stride           | stride width of sliding window [second]             |                                                                      | `float`       |
 |                      |                                                     |                                                                      |               |
-| enable_truth         | enable ground truth or not                          |                                                                      | `bool`        |
+| truth_log_file       | ground truth position log file                      | disabled if unspecified                                              | `str \| None` |
 |                      |                                                     |                                                                      |               |
 | el_correction        | correction term for difference in elevation         |                                                                      | `float`       |
 | propag_coef          | propagation coefficient                             | takes 2 in ideal environment                                         | `float`       |
