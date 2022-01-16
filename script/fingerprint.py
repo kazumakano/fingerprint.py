@@ -68,7 +68,7 @@ class Fingerprint(Map):
                 valid_point_poses = np.vstack((valid_point_poses, p))
                 valid_rssi = np.hstack((valid_rssi, self.rssi_lists[i, beacon_index]))
         try:
-            return griddata(valid_point_poses, valid_rssi, tuple(np.array(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1])), dtype=np.uint16)), method="cubic")
+            return griddata(valid_point_poses, valid_rssi, tuple(np.meshgrid(range(self.img.shape[0]), range(self.img.shape[1]))), method="cubic")
         except:
             print(f"fingerprint.py: heatmap of given MAC address was not successfully created probably because of its fewness of valid points {valid_point_poses}")
             warnings.simplefilter("ignore", category=UserWarning)
