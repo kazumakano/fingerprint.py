@@ -41,4 +41,5 @@ direct_sd: 4.5
 max_particle_stride: 32
 lost_resample_policy: 1
 dist_sd: 64
+estim_pos_policy: 1
 neg_weight_coef: 0
