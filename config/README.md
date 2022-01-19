@@ -7,6 +7,7 @@ You can customize following parameters:
 | begin                | begin datetime of RSSI log                          | must be like 'yyyy-mm-dd hh:mm:ss'                                   | `str`         |
 | end                  | end datetime of RSSI log                            | must be like 'yyyy-mm-dd hh:mm:ss'                                   | `str`         |
 | log_file             | RSSI log file                                       |                                                                      | `str`         |
+| result_file_name     | file name of image and video                        | auto generated if unspecified                                        | `str \| None` |
 |                      |                                                     |                                                                      |               |
 | win_size             | size of sliding window [second]                     |                                                                      | `float`       |
 |                      |                                                     |                                                                      |               |
@@ -17,7 +18,6 @@ You can customize following parameters:
 | frame_rate           | frame rate of video [FPS]                           | synchronized with real speed if 0                                    | `float`       |
 | map_conf_file        | map config file                                     |                                                                      | `str`         |
 | map_img_file         | map image file                                      |                                                                      | `str`         |
-| result_file_name     | file name of image and video                        | auto generated if unspecified                                        | `str \| None` |
 | win_stride           | stride width of sliding window [second]             |                                                                      | `float`       |
 |                      |                                                     |                                                                      |               |
 | truth_log_file       | ground truth position log file                      | disabled if unspecified                                              | `str \| None` |
