@@ -3,13 +3,14 @@ from datetime import datetime, timedelta
 from typing import Any
 import numpy as np
 import particle_filter.script.parameter as pf_param
+import particle_filter.script.utility as pf_util
 from particle_filter.script.log import Log
 from script.fingerprint import Fingerprint
 from script.window import Window
 
 
 def _set_main_params(conf: dict[str, Any]) -> None:
-    global BEGIN, END, LOG_FILE, FP_BEGIN, FP_END, FP_LOG_FILE
+    global BEGIN, END, LOG_FILE, FP_BEGIN, FP_END, FP_LOG_FILE, RESULT_FILE_NAME
 
     BEGIN = datetime.strptime(conf["begin"], "%Y-%m-%d %H:%M:%S")
     END = datetime.strptime(conf["end"], "%Y-%m-%d %H:%M:%S")
@@ -17,11 +18,12 @@ def _set_main_params(conf: dict[str, Any]) -> None:
     FP_BEGIN = datetime.strptime(conf["fp_begin"], "%Y-%m-%d %H:%M:%S")
     FP_END = datetime.strptime(conf["fp_end"], "%Y-%m-%d %H:%M:%S")
     FP_LOG_FILE = str(conf["fp_log_file"])
+    RESULT_FILE_NAME = pf_util.gen_file_name() if conf["result_file_name"] is None else str(conf["result_file_name"])
 
 def fingerprint() -> None:
     log = Log(BEGIN, END, path.join(pf_param.ROOT_DIR, "log/observed/", LOG_FILE))
     fp_log = Log(FP_BEGIN + timedelta(seconds=pf_param.WIN_SIZE), FP_END, path.join(pf_param.ROOT_DIR, "log/observed/", FP_LOG_FILE))
-    fp = Fingerprint(FP_BEGIN, FP_END, fp_log)
+    fp = Fingerprint(FP_BEGIN, FP_END, fp_log, RESULT_FILE_NAME)
 
     if pf_param.ENABLE_DRAW_BEACONS:
         fp.draw_beacons(True)

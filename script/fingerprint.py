@@ -16,7 +16,7 @@ from .segment import get_seg_rssi_list
 
 
 class Fingerprint(Map):
-    def __init__(self, begin: datetime, end: datetime, log: Log) -> None:
+    def __init__(self, begin: datetime, end: datetime, log: Log, result_file_name: str) -> None:
         global RSSI_AT_BEACON
 
         if begin > end:
@@ -25,7 +25,7 @@ class Fingerprint(Map):
         if param.USE_BEACON_POINTS:
             RSSI_AT_BEACON = np.float16(util.calc_rssi_by_dist(0))    # RSSI at points directly under beacon
 
-        super().__init__(log.mac_list)
+        super().__init__(log.mac_list, result_file_name)
 
         scan_span = timedelta(seconds=param.SCAN_SPAN)
         entire_span = scan_span + timedelta(seconds=param.MARGIN_SPAN)

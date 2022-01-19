@@ -1,6 +1,7 @@
 begin: "2000-01-01 00:00:00"
 end: "2000-01-01 23:59:59"
 log_file: "sample_ble.csv"
+result_file_name:
 
 win_size: 2
 
@@ -11,7 +12,6 @@ enable_save_video: False
 frame_rate: 1
 map_conf_file: sample.yaml
 map_img_file: sample.pgm
-result_file_name:
 win_stride: 1
 
 truth_log_file:
@@ -39,6 +39,7 @@ seg_policy: 1
 map_show_policy: 1
 direct_sd: 4.5
 max_particle_stride: 32
+rand_pos_range: 512
 lost_resample_policy: 1
 dist_sd: 64
 estim_pos_policy: 1
