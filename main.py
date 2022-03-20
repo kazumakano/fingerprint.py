@@ -10,7 +10,7 @@ from script.window import Window
 
 
 def _set_main_params(conf: dict[str, Any]) -> None:
-    global BEGIN, END, LOG_FILE, FP_BEGIN, FP_END, FP_LOG_FILE, RESULT_FILE_NAME
+    global BEGIN, END, LOG_FILE, FP_BEGIN, FP_END, FP_LOG_FILE, RESULT_DIR_NAME
 
     BEGIN = datetime.strptime(conf["begin"], "%Y-%m-%d %H:%M:%S")
     END = datetime.strptime(conf["end"], "%Y-%m-%d %H:%M:%S")
@@ -18,12 +18,13 @@ def _set_main_params(conf: dict[str, Any]) -> None:
     FP_BEGIN = datetime.strptime(conf["fp_begin"], "%Y-%m-%d %H:%M:%S")
     FP_END = datetime.strptime(conf["fp_end"], "%Y-%m-%d %H:%M:%S")
     FP_LOG_FILE = str(conf["fp_log_file"])
-    RESULT_FILE_NAME = pf_util.gen_file_name() if conf["result_file_name"] is None else str(conf["result_file_name"])
+    RESULT_DIR_NAME = None if conf["result_dir_name"] is None else str(conf["result_dir_name"])
 
-def fingerprint() -> None:
+def fingerprinting(conf: dict[str, Any], enable_show: bool = True) -> None:
     log = Log(BEGIN, END, path.join(pf_param.ROOT_DIR, "log/observed/", LOG_FILE))
     fp_log = Log(FP_BEGIN + timedelta(seconds=pf_param.WIN_SIZE), FP_END, path.join(pf_param.ROOT_DIR, "log/observed/", FP_LOG_FILE))
-    fp = Fingerprint(FP_BEGIN, FP_END, fp_log, RESULT_FILE_NAME)
+    result_dir = pf_util.make_result_dir(RESULT_DIR_NAME)
+    fp = Fingerprint(FP_BEGIN, FP_END, fp_log, result_dir)
 
     if pf_param.ENABLE_DRAW_BEACONS:
         fp.draw_beacons(True)
@@ -33,15 +34,15 @@ def fingerprint() -> None:
     t = BEGIN
     while t <= END:
         print(f"main.py: {t.time()}")
-        win = Window(t, fp_log.mac_list, log)
 
-        estim_pos = fp.estim_pos(win.rssi_list)
+        estim_pos = fp.estim_pos(Window(t, fp_log.mac_list, log).rssi_list)
         
         if not np.isnan(estim_pos[0]):    # if not lost
             fp.draw_pos(estim_pos)
-            fp.show()
         if pf_param.ENABLE_SAVE_VIDEO:
             fp.record()
+        if enable_show:
+            fp.show()
 
         t += timedelta(seconds=pf_param.WIN_STRIDE)
     
@@ -50,7 +51,10 @@ def fingerprint() -> None:
         fp.save_img()
     if pf_param.ENABLE_SAVE_VIDEO:
         fp.save_video()
-    fp.show(0)
+    if pf_param.ENABLE_WRITE_CONF:
+        pf_util.write_conf(conf, result_dir)
+    if enable_show:
+        fp.show(0)
 
 if __name__ == "__main__":
     import argparse
@@ -58,7 +62,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--conf_file", help="specify config file", metavar="PATH_TO_CONF_FILE")
+    parser.add_argument("--no_display", action="store_true", help="run without display")
+    args = parser.parse_args()
 
-    _set_main_params(set_params(parser.parse_args().conf_file))
+    conf = set_params(args.conf_file)
+    _set_main_params(conf)
 
-    fingerprint()
+    fingerprinting(conf, not args.no_display)
