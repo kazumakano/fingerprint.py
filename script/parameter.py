@@ -5,19 +5,17 @@ from particle_filter.script.parameter import set_params as set_pf_params
 
 
 def _set_fingerprint_params(conf: dict[str, Any]) -> None:
-    global MARGIN_SPAN, SCAN_SPAN, SET_POINTS_POLICY, USE_BEACON_POINTS, XLIM, YLIM
+    global MARGIN_SPAN, SCAN_SPAN, SET_POINTS_POLICY, USE_BEACON_POINTS
 
     MARGIN_SPAN = float(conf["margin_span"])
     SCAN_SPAN = float(conf["scan_span"])
     SET_POINTS_POLICY = np.int8(conf["set_points_policy"])
     USE_BEACON_POINTS = bool(conf["use_beacon_points"])
-    XLIM = np.array(conf["xlim"], dtype=np.int16)
-    YLIM = np.array(conf["ylim"], dtype=np.int16)
 
 def _set_segment_params(conf: dict[str, Any]) -> None:
     global MIN_COUNT, SEG_POLICY
 
-    MIN_COUNT = np.uint8(conf["min_reception_count"])
+    MIN_COUNT = np.int8(conf["min_reception_count"])
     SEG_POLICY = np.int8(conf["seg_policy"])
 
 def set_params(conf_file: Union[str, None] = None) -> dict[str, Any]:

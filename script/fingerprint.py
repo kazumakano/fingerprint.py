@@ -1,7 +1,7 @@
 import os.path as path
 import warnings
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Union
 import cv2
 import numpy as np
 import particle_filter.script.parameter as pf_param
@@ -16,16 +16,16 @@ from .segment import get_seg_rssi_list
 
 
 class Fingerprint(Map):
-    def __init__(self, begin: datetime, end: datetime, log: Log, result_file_name: str) -> None:
+    def __init__(self, begin: datetime, end: datetime, log: Log, result_dir: Union[str, None] = None) -> None:
         global RSSI_AT_BEACON
 
         if begin > end:
             raise Exception("log.py: log range is wrong")
 
         if param.USE_BEACON_POINTS:
-            RSSI_AT_BEACON = np.float16(util.calc_rssi_by_dist(0))    # RSSI at points directly under beacon
+            RSSI_AT_BEACON = np.float32(util.calc_rssi_by_dist(0))    # RSSI at points directly under beacon
 
-        super().__init__(log.mac_list, result_file_name)
+        super().__init__(log.mac_list, result_dir)
 
         scan_span = timedelta(seconds=param.SCAN_SPAN)
         entire_span = scan_span + timedelta(seconds=param.MARGIN_SPAN)
@@ -40,7 +40,7 @@ class Fingerprint(Map):
         if param.SET_POINTS_POLICY == 1:      # load from ground truth trajectory
             pass    # not implemented yet
         elif param.SET_POINTS_POLICY == 2:    # load from scan point file
-            self.point_poses = np.loadtxt(path.join(param.ROOT_DIR, "map/point.csv"), dtype=np.float16, delimiter=",")
+            self.point_poses = np.loadtxt(path.join(param.ROOT_DIR, "map/point.csv"), dtype=np.float32, delimiter=",")
 
         if len(self.point_poses) != point_num:
             raise Exception(f"fingerprint.py: the number of scan points is expected to be {point_num} but {len(self.point_poses)} points were loaded")
@@ -48,7 +48,7 @@ class Fingerprint(Map):
         print("fingerprint.py: scan points has been loaded")
 
     def _set_rssis(self, begin: datetime, entire_span: timedelta, log: Log, point_num: int, scan_span: timedelta) -> None:
-        self.rssi_lists = np.empty((point_num, len(log.mac_list)), dtype=np.float16)
+        self.rssi_lists = np.empty((point_num, len(log.mac_list)), dtype=np.float32)
 
         t = begin
         for i in range(point_num):
@@ -58,8 +58,8 @@ class Fingerprint(Map):
         print(f"fingerprint.py: RSSI has been loaded")
 
     def _create_heatmap(self, beacon_index: int) -> np.ndarray:
-        valid_point_poses = np.empty((0, 2), dtype=np.float16)    # positions of points where RSSI is valid
-        valid_rssi = np.empty(0, dtype=np.float16)
+        valid_point_poses = np.empty((0, 2), dtype=np.float32)    # positions of points where RSSI is valid
+        valid_rssi = np.empty(0, dtype=np.float32)
         if param.USE_BEACON_POINTS:
             valid_point_poses = np.vstack((valid_point_poses, self.beacon_pos_list[beacon_index]))
             valid_rssi = np.hstack((valid_rssi, RSSI_AT_BEACON))
@@ -95,29 +95,20 @@ class Fingerprint(Map):
             lh_grid += util.get_likelihood_grid(self.grid_list[i], r)
         max_lh: np.float64 = lh_grid.max()
 
-        return np.full(2, np.nan, dtype=np.float16) if max_lh == 0 else np.argwhere(lh_grid == max_lh).mean(axis=0).astype(np.float16)[::-1]
+        return np.full(2, np.nan, dtype=np.float32) if max_lh == 0 else np.argwhere(lh_grid == max_lh).mean(axis=0).astype(np.float32)[::-1]
 
-    def show_with_heatmap(self, mac: str, mac_list: np.ndarray, enable_lim: bool = False, xlim: Any = None, ylim: Any = None) -> None:
+    def _draw_beacon(self, beacon_index: np.int16) -> None:
+        self._draw_pos((0, 0, 255), False, self.beacon_pos_list[beacon_index])
+
+    def show_with_heatmap(self, mac: str, mac_list: np.ndarray) -> None:
         if mac not in mac_list:
             raise Warning("fingerprint.py: given MAC address was not found in log")
 
         ax = plt.subplots(figsize=(16, 16))[1]
-        cax: plt.Axes = make_axes_locatable(ax).append_axes("right", 0.2, pad=0.1)    # create axis for colorbar
-        print("cax", type(cax))
-        for i, m in enumerate(mac_list):
-            if m == mac:
-                img = cv2.circle(self.img.copy(), self.beacon_pos_list[i].astype(int), 3, (0, 0, 255), 6)
-                if enable_lim:
-                    if xlim is None:
-                        xlim = param.XLIM
-                    if ylim is None:
-                        ylim = param.YLIM
-                    ax.imshow(cv2.cvtColor(img[ylim[0]:ylim[1], xlim[0]:xlim[1]], cv2.COLOR_BGR2RGB))    # limit size and convert color space
-                    aximg: plt.AxesImage = ax.imshow(self.grid_list[i, ylim[0]:ylim[1], xlim[0]:xlim[1]], cmap="jet", alpha=0.5)
-                    print("aximg", type(aximg))
-                    plt.colorbar(mappable=aximg, cax=cax)
-                else:
-                    ax.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-                    aximg: plt.AxesImage = ax.imshow(self.grid_list[i], cmap="jet", alpha=0.5)
-                    plt.colorbar(mappable=aximg, cax=cax)
-                break
+        if pf_param.SHOW_RANGE is not None:
+            ax.set_xlim(left=pf_param.SHOW_RANGE[0, 0], right=pf_param.SHOW_RANGE[0, 1])
+            ax.set_ylim(bottom=pf_param.SHOW_RANGE[1, 1], top=pf_param.SHOW_RANGE[1, 0])
+        beacon_index = np.int16(np.where(mac == mac_list)[0][0])
+        self._draw_beacon(beacon_index)
+        ax.imshow(cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB))    # convert color space
+        plt.colorbar(mappable=ax.imshow(self.grid_list[beacon_index], cmap="jet", alpha=0.5), cax=make_axes_locatable(ax).append_axes("right", 0.2, pad=0.1))

@@ -8,7 +8,7 @@ class Window:
     def __init__(self, current: datetime, fp_mac_list: np.ndarray, log: Log) -> None:
         ts, mac, rssi = log.slice_win(current)
 
-        self.rssi_list = np.full(len(fp_mac_list), -np.inf, dtype=np.float16)
+        self.rssi_list = np.full(len(fp_mac_list), -np.inf, dtype=np.float32)
         if pf_param.WIN_POLICY == 1:      # use maximum RSSI
             for i in range(len(ts)):
                 for j, m in enumerate(fp_mac_list):

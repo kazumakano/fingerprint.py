@@ -1,3 +1,5 @@
+*.ipynb
+.ipynb_checkpoints/
 config/*
 !config/README.md
 map/point.csv
