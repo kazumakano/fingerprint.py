@@ -1,10 +1,14 @@
 begin: "2000-01-01 00:00:00"
 end: "2000-01-01 23:59:59"
 log_file: "sample_ble.csv"
-result_file_name:
+fp_begin: "2000-01-01 00:00:00"
+fp_end: "2000-01-01 01:00:00"
+fp_log_file: "sample_ble.csv"
+result_dir_name:
 
 win_size: 2
 
+beacon_dir: fp_beacon
 enable_clear_map: True
 enable_draw_beacons: False
 enable_save_img: False
@@ -12,35 +16,31 @@ enable_save_video: False
 frame_rate: 1
 map_conf_file: sample.yaml
 map_img_file: sample.pgm
+map_show_range:
 win_stride: 1
 
 truth_log_file:
 
 el_correction: 2
-propag_coef: 4
+enable_write_conf: False
+propag_coef: 5
 
 win_policy: 1
 
-fp_begin: "2000-01-01 00:00:00"
-fp_end: "2000-01-01 01:00:00"
-fp_log_file: "sample_ble.csv"
-
 margin_span: 30
-scan_span: 60
+scan_span: 30
 set_points_policy: 2
 use_beacon_points: False
-xlim: [0, 1000]
-ylim: [0, 1000]
 
-min_reception_count: 50
+min_reception_count: 15
 seg_policy: 1
 
 # tentative
-map_show_policy: 1
-direct_sd: 4.5
-max_particle_stride: 32
-rand_pos_range: 512
+map_show_policy: 3
+direct_sd: 1
+max_particle_stride: 25
+rand_pos_range: 375
 lost_resample_policy: 1
-dist_sd: 64
-estim_pos_policy: 1
+dist_sd: 37.5
+estim_pos_policy: 2
 neg_weight_coef: 0
