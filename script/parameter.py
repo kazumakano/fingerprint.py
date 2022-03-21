@@ -1,5 +1,5 @@
 import os.path as path
-from typing import Any, Union
+from typing import Any, Optional
 import numpy as np
 from particle_filter.script.parameter import set_params as set_pf_params
 
@@ -18,7 +18,7 @@ def _set_segment_params(conf: dict[str, Any]) -> None:
     MIN_COUNT = np.int8(conf["min_reception_count"])
     SEG_POLICY = np.int8(conf["seg_policy"])
 
-def set_params(conf_file: Union[str, None] = None) -> dict[str, Any]:
+def set_params(conf_file: Optional[str] = None) -> dict[str, Any]:
     global ROOT_DIR
 
     ROOT_DIR = path.join(path.dirname(__file__), "../")

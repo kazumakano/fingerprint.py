@@ -1,7 +1,7 @@
 import os.path as path
 import warnings
 from datetime import datetime, timedelta
-from typing import Union
+from typing import Optional
 import cv2
 import numpy as np
 import particle_filter.script.parameter as pf_param
@@ -16,7 +16,7 @@ from .segment import get_seg_rssi_list
 
 
 class Fingerprint(Map):
-    def __init__(self, begin: datetime, end: datetime, log: Log, result_dir: Union[str, None] = None) -> None:
+    def __init__(self, begin: datetime, end: datetime, log: Log, result_dir: Optional[str] = None) -> None:
         global RSSI_AT_BEACON
 
         if begin > end:
